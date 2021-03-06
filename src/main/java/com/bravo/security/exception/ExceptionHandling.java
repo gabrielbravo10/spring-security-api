@@ -2,10 +2,7 @@ package com.bravo.security.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.bravo.security.domain.HttpResponse;
-import com.bravo.security.exception.domain.EmailExistException;
-import com.bravo.security.exception.domain.EmailNotFoundException;
-import com.bravo.security.exception.domain.UserNotFoundException;
-import com.bravo.security.exception.domain.UsernameExistException;
+import com.bravo.security.exception.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -111,6 +108,12 @@ public class ExceptionHandling implements ErrorController {
     public ResponseEntity<HttpResponse> notFoundException(NoResultException exception) {
         LOGGER.error(exception.getMessage());
         return createHttpResponse(HttpStatus.NOT_FOUND, exception.getMessage());
+    }
+
+    @ExceptionHandler(NotAnImageFileException.class)
+    public ResponseEntity<HttpResponse> notAnImageFileException(NotAnImageFileException exception) {
+        LOGGER.error(exception.getMessage());
+        return createHttpResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(IOException.class)

@@ -6,10 +6,7 @@ import com.bravo.security.domain.HttpResponse;
 import com.bravo.security.domain.User;
 import com.bravo.security.domain.UserPrincipal;
 import com.bravo.security.exception.ExceptionHandling;
-import com.bravo.security.exception.domain.EmailExistException;
-import com.bravo.security.exception.domain.EmailNotFoundException;
-import com.bravo.security.exception.domain.UserNotFoundException;
-import com.bravo.security.exception.domain.UsernameExistException;
+import com.bravo.security.exception.domain.*;
 import com.bravo.security.service.UserService;
 import com.bravo.security.utility.JWTTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +35,9 @@ public class UserResource extends ExceptionHandling {
 
     public static final String EMAIL_SENT = "An email with a new password was sent to: ";
     public static final String USER_DELETED_SUCCESSFULLY = "User deleted successfully";
-    private UserService userService;
-    private AuthenticationManager authenticationManager;
-    private JWTTokenProvider jwtTokenProvider;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JWTTokenProvider jwtTokenProvider;
 
     @Autowired
     public UserResource(UserService userService, AuthenticationManager authenticationManager,
@@ -75,7 +72,7 @@ public class UserResource extends ExceptionHandling {
             @RequestParam("isActive") String isActive,
             @RequestParam("isNonLocked") String isNonLocked,
             @RequestParam(value = "profileImage", required = false) MultipartFile profileImage
-    ) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException {
+    ) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
         User newUser = userService.addNewUser(firstName, lastName, username, email,
                 role, Boolean.parseBoolean(isNonLocked), Boolean.parseBoolean(isActive), profileImage);
         return new ResponseEntity<>(newUser, HttpStatus.OK);
@@ -92,7 +89,7 @@ public class UserResource extends ExceptionHandling {
             @RequestParam("isActive") String isActive,
             @RequestParam("isNonLocked") String isNonLocked,
             @RequestParam(value = "profileImage", required = false) MultipartFile profileImage
-    ) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException {
+    ) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
         User updatedUser = userService.updateUser(currentUsername, firstName, lastName, username, email,
                 role, Boolean.parseBoolean(isNonLocked), Boolean.parseBoolean(isActive), profileImage);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
@@ -116,18 +113,18 @@ public class UserResource extends ExceptionHandling {
         return response(HttpStatus.OK, EMAIL_SENT + email);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete/{username}")
     @PreAuthorize("hasAnyAuthority('user:delete')")
-    public ResponseEntity<HttpResponse> deleteUser(@PathVariable("id") long id) {
-        userService.deleteUser(id);
-        return response(HttpStatus.NO_CONTENT, USER_DELETED_SUCCESSFULLY);
+    public ResponseEntity<HttpResponse> deleteUser(@PathVariable("username") String username) throws IOException {
+        userService.deleteUser(username);
+        return response(HttpStatus.OK, USER_DELETED_SUCCESSFULLY);
     }
 
     @PostMapping("/updateProfileImage")
     public ResponseEntity<User> updateProfileImage(
             @RequestParam("username") String username,
             @RequestParam(value = "profileImage") MultipartFile profileImage
-    ) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException {
+    ) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
         User user = userService.updateProfileImage(username, profileImage);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }

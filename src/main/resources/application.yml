@@ -7,8 +7,8 @@ server:
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/spring_security_db
-    password:
-    username: 
+    password: password
+    username: root
   jpa:
     show-sql: true
     hibernate:

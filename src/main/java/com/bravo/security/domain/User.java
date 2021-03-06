@@ -1,5 +1,7 @@
 package com.bravo.security.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -10,14 +12,16 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Long id;
     private String userId;
     private String firstName;
     private String lastName;
     private String username;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     private String email;
-    private String profileImgUrl;
+    private String profileImageUrl;
     private Date lastLoginDate;
     private Date lastLoginDateDisplay;
     private Date joinDate;
@@ -30,7 +34,7 @@ public class User implements Serializable {
     }
 
     public User(Long id, String userId, String firstName, String lastName,
-                String username, String password, String email, String profileImgUrl,
+                String username, String password, String email, String profileImageUrl,
                 Date lastLoginDate, Date lastLoginDateDisplay, Date joinDate, String role,
                 String[] authorities, boolean isActive, boolean isNotLocked) {
         this.id = id;
@@ -40,7 +44,7 @@ public class User implements Serializable {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.profileImgUrl = profileImgUrl;
+        this.profileImageUrl = profileImageUrl;
         this.lastLoginDate = lastLoginDate;
         this.lastLoginDateDisplay = lastLoginDateDisplay;
         this.joinDate = joinDate;
@@ -106,12 +110,12 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public String getProfileImgUrl() {
-        return profileImgUrl;
+    public String getProfileImageUrl() {
+        return profileImageUrl;
     }
 
-    public void setProfileImgUrl(String profileImgUrl) {
-        this.profileImgUrl = profileImgUrl;
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
     public Date getLastLoginDate() {
